@@ -1,0 +1,15 @@
+{
+  "name": "CodeForge — Barcode Generator",
+  "short_name": "CodeForge",
+  "description": "Generate QR codes and Code 128 barcodes at custom physical sizes (in / cm / mm), with print-at-actual-size and PNG export.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2efe6",
+  "theme_color": "#1c2230",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
