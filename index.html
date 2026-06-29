@@ -118,6 +118,11 @@
   .lib-actions button { flex: 1; font-family: "IBM Plex Mono", monospace; font-size: 11px; padding: 6px; border: 1.5px solid var(--ink); border-radius: 2px; background: #fff; cursor: pointer; }
   .lib-actions .load { background: var(--ink); color: var(--paper); }
   .lib-actions .del { color: var(--warn); border-color: var(--warn); }
+  .dropdown { position: relative; display: inline-block; }
+  .dropdown-menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; background: var(--panel); border: 1.5px solid var(--ink); border-radius: 2px; box-shadow: 4px 4px 0 var(--ink); padding: 6px; display: none; z-index: 20; }
+  .dropdown.open .dropdown-menu { display: block; }
+  .dropdown-menu button { display: block; width: 100%; text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 13px; padding: 9px 10px; background: transparent; border: none; border-radius: 2px; cursor: pointer; color: var(--ink); }
+  .dropdown-menu button:hover { background: var(--scan-soft); }
   /* print-only: hide the UI, show just the code at true CSS size */
   #printArea { display: none; }
   @media print {
@@ -301,10 +306,15 @@
         <button class="btn btn-ghost" id="copyData">Copy</button>
       </div>
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-primary" id="printZebra">Print to Zebra</button>
-        <button class="btn btn-ghost" id="copyZpl">Copy ZPL</button>
-        <button class="btn btn-ghost" id="dlZpl">Download .zpl</button>
-        <button class="btn btn-ghost" id="showZpl">Show ZPL</button>
+        <div class="dropdown" id="zplDrop">
+          <button class="btn btn-primary" id="zplToggle" type="button">Zebra / ZPL ▾</button>
+          <div class="dropdown-menu" id="zplMenu">
+            <button id="printZebra">Print to Zebra</button>
+            <button id="copyZpl">Copy ZPL</button>
+            <button id="dlZpl">Download .zpl</button>
+            <button id="showZpl">Show ZPL</button>
+          </div>
+        </div>
       </div>
       <textarea id="zplOut" readonly spellcheck="false" style="display:none;margin-top:10px;font-size:12px;min-height:120px"></textarea>
       <p class="print-tip" id="zplTip">ZPL prints natively on your Zebra (203 dpi). Send it to <b>192.168.210.196</b> port <b>9100</b> — see the note after copying.</p>
@@ -838,10 +848,22 @@
       list.appendChild(card);
     });
   }
+  // Zebra / ZPL dropdown
+  $("zplToggle").addEventListener("click", function (e) { e.stopPropagation(); $("zplDrop").classList.toggle("open"); });
+  $("zplMenu").addEventListener("click", function (e) { if (e.target.closest("button")) $("zplDrop").classList.remove("open"); });
+  document.addEventListener("click", function (e) { if (!e.target.closest("#zplDrop")) $("zplDrop").classList.remove("open"); });
+
   $("saveLib").addEventListener("click", function () {
     if (!storageOK) { setErr("Saving works on the live app, not in this preview."); return; }
     if (!$("data").value || !$("output").querySelector("canvas")) { setErr("Generate a valid code before saving."); return; }
     var arr = loadHistory();
+    var current = JSON.stringify(currentSettings());
+    if (arr.some(function (it) { return JSON.stringify(it.settings) === current; })) {
+      setErr("This label is already in your library.");
+      var bx = this, tx = bx.textContent; bx.textContent = "Already saved"; setTimeout(function () { bx.textContent = tx; }, 1400);
+      return;
+    }
+    setErr("");
     arr.unshift({ id: "c" + Date.now(), ts: Date.now(),
       label: state.type === "qr" ? "QR code" : BAR_META[barFmt()].name,
       settings: currentSettings(), thumb: currentThumb() });

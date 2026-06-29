@@ -1,5 +1,5 @@
 /* CodeForge service worker — offline support */
-const CACHE = "codeforge-v11";
+const CACHE = "codeforge-v12";
 const SHELL = [
   "./",
   "./index.html",
