@@ -1,9 +1,10 @@
 /* CodeForge service worker — offline support */
-const CACHE = "codeforge-v10";
+const CACHE = "codeforge-v11";
 const SHELL = [
   "./",
   "./index.html",
   "./404.html",
+  "./itb-box.png",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>CodeForge — barcode generator</title>
+<title>ITB Fulfillment — CodeForge</title>
 <link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#1c2230">
+<meta name="theme-color" content="#26401a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CodeForge">
+<meta name="apple-mobile-web-app-title" content="ITB CodeForge">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,14 +19,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>
   :root {
-    --paper: #f2efe6;
-    --panel: #fbfaf5;
-    --ink: #1c2230;
-    --ink-soft: #5a6276;
-    --line: #d6d2c4;
-    --scan: #e8482b;
-    --scan-soft: #f8d9d1;
-    --grid: #e6e2d6;
+    --paper: #f3f6ef;
+    --panel: #fbfcf8;
+    --ink: #26401a;          /* ITB dark forest green */
+    --ink-soft: #5a6a50;
+    --line: #d9e0d0;
+    --scan: #5fae42;         /* ITB brand green (accents, scanline, focus) */
+    --scan-strong: #3a7f2b;  /* deeper green for solid buttons */
+    --scan-soft: #d8eccd;
+    --warn: #d1492c;         /* errors / destructive actions */
+    --grid: #e7ecdf;
   }
   * { box-sizing: border-box; }
   body {
@@ -40,8 +42,10 @@
   .wrap { max-width: 1040px; margin: 0 auto; padding: 32px 20px 64px;
     padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right));
     padding-top: max(32px, env(safe-area-inset-top)); }
-  header { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
-  .logo { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.02em; }
+  header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+  .brand-mark { height: 54px; width: auto; border-radius: 10px; display: block; }
+  .brand-text { display: flex; flex-direction: column; gap: 2px; }
+  .logo { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em; line-height: 1; color: var(--ink); }
   .logo b { color: var(--scan); }
   .tag { color: var(--ink-soft); font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em; }
   .rule { height: 2px; background: var(--ink); margin: 14px 0 24px; }
@@ -89,11 +93,11 @@
   .readout span { color: var(--ink); }
   .actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
   .btn { font-family: "Space Grotesk", sans-serif; font-weight: 500; font-size: 13px; letter-spacing: 0.04em; padding: 12px 18px; border-radius: 2px; cursor: pointer; border: 2px solid var(--ink); }
-  .btn-primary { background: var(--scan); color: #fff; border-color: var(--scan); flex: 1; }
+  .btn-primary { background: var(--scan-strong); color: #fff; border-color: var(--scan-strong); flex: 1; }
   .btn-primary:hover { filter: brightness(1.05); }
   .btn-ghost { background: #fff; color: var(--ink); }
   .btn-ghost:hover { background: var(--ink); color: var(--paper); }
-  .err { color: var(--scan); font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .err { color: var(--warn); font-size: 12px; margin-top: 10px; min-height: 16px; }
   #saveHint { margin-top: 16px; padding-top: 16px; border-top: 1.5px dashed var(--line); }
   .save-img { display: block; max-width: 100%; border: 1.5px solid var(--ink); border-radius: 2px; background: #fff; }
   .save-msg { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em; line-height: 1.5; margin: 10px 0 0; }
@@ -102,7 +106,7 @@
   .print-tip b { color: var(--ink); }
   #libPanel { margin-top: 22px; }
   .lib-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .lib-clear { font-family: "IBM Plex Mono", monospace; font-size: 11px; padding: 6px 10px; border: 1.5px solid var(--scan); color: var(--scan); background: #fff; border-radius: 2px; cursor: pointer; }
+  .lib-clear { font-family: "IBM Plex Mono", monospace; font-size: 11px; padding: 6px 10px; border: 1.5px solid var(--warn); color: var(--warn); background: #fff; border-radius: 2px; cursor: pointer; }
   .lib-empty, .lib-unavail { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 6px 0 0; }
   .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
   .lib-card { border: 1.5px solid var(--line); border-radius: 2px; background: #fff; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -113,7 +117,7 @@
   .lib-actions { display: flex; gap: 6px; }
   .lib-actions button { flex: 1; font-family: "IBM Plex Mono", monospace; font-size: 11px; padding: 6px; border: 1.5px solid var(--ink); border-radius: 2px; background: #fff; cursor: pointer; }
   .lib-actions .load { background: var(--ink); color: var(--paper); }
-  .lib-actions .del { color: var(--scan); border-color: var(--scan); }
+  .lib-actions .del { color: var(--warn); border-color: var(--warn); }
   /* print-only: hide the UI, show just the code at true CSS size */
   #printArea { display: none; }
   @media print {
@@ -127,8 +131,11 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">Code<b>Forge</b></div>
-    <div class="tag">data → machine-readable</div>
+    <img src="./itb-box.png" alt="ITB Fulfillment" class="brand-mark">
+    <div class="brand-text">
+      <div class="logo">ITB <b>Fulfillment</b></div>
+      <div class="tag">CodeForge · barcode &amp; label studio</div>
+    </div>
   </header>
   <div class="rule"></div>
 
@@ -228,7 +235,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="field"><label>Foreground</label><input type="color" id="qrDark" value="#1c2230" style="height:40px;padding:4px;cursor:pointer"></div>
+          <div class="field"><label>Foreground</label><input type="color" id="qrDark" value="#26401a" style="height:40px;padding:4px;cursor:pointer"></div>
           <div class="field"><label>Background</label><input type="color" id="qrLight" value="#ffffff" style="height:40px;padding:4px;cursor:pointer"></div>
         </div>
       </div>
@@ -468,7 +475,7 @@
     try {
       JsBarcode(tmp, data, { format: fmt, width: +$("barWidth").value, height: outH,
         displayValue: $("barText").checked, fontSize: +$("barFont").value,
-        lineColor: "#1c2230", background: "#ffffff",
+        lineColor: "#26401a", background: "#ffffff",
         margin: 10, font: "IBM Plex Mono", valid: function (v) { bad = !v; } });
     } catch (e) { bad = true; }
     if (bad || !tmp.width) {
@@ -516,7 +523,7 @@
       var dpiTxt = (u === "px") ? "" : " @ " + d + " DPI";
       var over = (cw > lw || ch > lh);
       $("labelNote").innerHTML = "label <b>" + pxToUnitLabel(lw) + " × " + pxToUnitLabel(lh) + "</b> (" + lw + " × " + lh + " px" + dpiTxt + ")" +
-        (over ? " &middot; <span style='color:var(--scan)'>code is bigger than the label — shrink it</span>" : "");
+        (over ? " &middot; <span style='color:var(--warn)'>code is bigger than the label — shrink it</span>" : "");
       $("physLabel").textContent = "label " + pxToUnitLabel(lw) + " × " + pxToUnitLabel(lh);
     } else {
       out.appendChild(built.canvas);
